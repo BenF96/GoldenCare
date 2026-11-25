@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GoldenCare – Elderly Health Tracker</title>
+  <meta name="description" content="GoldenCare helps elderly people and their caregivers track vital signs, medications, appointments and health history." />
+  <link rel="icon" type="image/svg+xml" href="icon.svg" />
+  <meta name="theme-color" content="#2c99d6" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <a class="skip-link" href="#app">Skip to main content</a>
+
+  <header class="site-header">
+    <div class="brand">
+      <img class="logo" src="icon.svg" alt="" width="48" height="48" />
+      <div>
+        <h1>GoldenCare</h1>
+        <p>Elderly Health Maintenance Tracker</p>
+      </div>
+    </div>
+
+    <div class="a11y-tools" role="group" aria-label="Display settings">
+      <button class="tool" data-action="font" data-step="-1" aria-label="Smaller text">A−</button>
+      <button class="tool" data-action="font" data-step="1" aria-label="Larger text">A+</button>
+      <button class="tool" data-action="contrast" aria-pressed="false">High contrast</button>
+      <button class="tool" data-action="notify" id="notify-btn" hidden>🔔 Enable reminders</button>
+    </div>
+
+    <nav class="main-nav" aria-label="Main">
+      <a href="#/dashboard">Dashboard</a>
+      <a href="#/today">Medications today <span id="due-badge" class="nav-badge" hidden></span></a>
+      <a href="#/elders">Elders</a>
+      <a href="#/caregivers">Caregivers</a>
+      <a href="#/bins">📦 Storage bins</a>
+      <a href="#/trash">🗑 Recently deleted</a>
+    </nav>
+  </header>
+
+  <main id="app" tabindex="-1" aria-live="polite">
+    <p class="muted">Loading…</p>
+  </main>
+
+  <footer class="site-footer">
+    GoldenCare · Health readings are flagged using general reference ranges and do not replace medical advice.
+  </footer>
+
+  <dialog id="form-dialog" aria-labelledby="dialog-title">
+    <h2 id="dialog-title"></h2>
+    <form id="dialog-form" novalidate></form>
+  </dialog>
+
+  <div id="reminders" aria-live="assertive" aria-label="Medication reminders"></div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
