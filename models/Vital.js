@@ -13,7 +13,13 @@ const MEASUREMENTS = ['systolic', 'diastolic', 'heartRate', 'temperature', 'oxyg
 const vitalSchema = new mongoose.Schema(
   {
     elder: { type: mongoose.Schema.Types.ObjectId, ref: 'Elder', required: [true, 'Elder is required'] },
-    recordedAt: { type: Date, required: [true, 'Date and time are required'], default: Date.now },
+    recordedAt: {
+      type: Date,
+      required: [true, 'Date and time are required'],
+      default: Date.now,
+      // 5 minutes of leeway for clock differences between devices
+      validate: { validator: (v) => v.getTime() <= Date.now() + 5 * 60 * 1000, message: 'Date and time cannot be in the future' },
+    },
     systolic: range(50, 260, 'Systolic pressure'),
     diastolic: range(30, 160, 'Diastolic pressure'),
     heartRate: range(20, 250, 'Heart rate'),

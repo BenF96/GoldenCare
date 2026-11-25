@@ -381,7 +381,9 @@ const doseBtn = (d, status, label, cls) =>
     `${label.replace('✓ ', '')}: ${d.name} at ${fmtTime(d.time)}`
   )}">${label}</button>`;
 const doseButtons = (d) =>
-  d.status === 'Pending' ? doseBtn(d, 'Taken', '✓ Taken', 'success') + doseBtn(d, 'Skipped', 'Skip', 'secondary') : doseBtn(d, 'Pending', 'Undo', 'secondary');
+  d.date > todayStr() ? '<span class="muted">Upcoming</span>' // future doses can't be marked yet
+  : d.status === 'Pending' ? doseBtn(d, 'Taken', '✓ Taken', 'success') + doseBtn(d, 'Skipped', 'Skip', 'secondary')
+  : doseBtn(d, 'Pending', 'Undo', 'secondary');
 
 function doseTable(doses, { showElder = true } = {}) {
   const isToday = doses[0]?.date === todayStr();

@@ -76,7 +76,10 @@ function crudRouter(Model, opts) {
     const purgeExpired = async () => {
       const expired = await Model.find({ deletedAt: { $ne: null, $lt: cutoff() } });
       for (const doc of expired) await destroy(doc);
+      return expired.length;
     };
+    // Also run on a schedule (see startPurgeSchedule), not only when someone opens the trash
+    purgers.push({ name, purge: purgeExpired });
 
     router.get(
       '/trash',
@@ -183,4 +186,26 @@ function crudRouter(Model, opts) {
   return router;
 }
 
-module.exports = { crudRouter, wrap, pick, HttpError, escapeRegex };
+// Trash clean-up jobs registered by routers with `trash` enabled
+const purgers = [];
+
+async function runPurgers() {
+  for (const { name, purge } of purgers) {
+    try {
+      const n = await purge();
+      if (n) console.log(`Trash clean-up: permanently deleted ${n} expired ${name} item(s)`);
+    } catch (err) {
+      console.error(`Trash clean-up for ${name} failed:`, err.message);
+    }
+  }
+}
+
+// Runs the clean-up now and then every `intervalMs` (default: hourly). Returns the timer.
+function startPurgeSchedule(intervalMs = 60 * 60 * 1000) {
+  runPurgers();
+  const timer = setInterval(runPurgers, intervalMs);
+  timer.unref(); // never keeps the process alive on its own
+  return timer;
+}
+
+module.exports = { crudRouter, wrap, pick, HttpError, escapeRegex, runPurgers, startPurgeSchedule };

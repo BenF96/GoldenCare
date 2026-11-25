@@ -6,6 +6,7 @@ const compression = require('compression');
 const morgan = require('morgan');
 const { rateLimit } = require('express-rate-limit');
 const config = require('./config');
+const { startPurgeSchedule } = require('./utils/crud');
 
 const app = express();
 app.set('trust proxy', config.trustProxy);
@@ -80,6 +81,9 @@ async function start({ mongoUri = config.mongoUri, port = config.port } = {}) {
   const server = await new Promise((resolve) => {
     const s = app.listen(port, () => resolve(s));
   });
+  // Permanently remove "Recently deleted" items past their 30 days – at startup, then hourly
+  const purgeTimer = startPurgeSchedule();
+  server.on('close', () => clearInterval(purgeTimer));
   console.log(`GoldenCare (${config.env}) running at http://localhost:${server.address().port}`);
   return server;
 }

@@ -24,7 +24,7 @@ async function buildSchedule(date, scope = {}) {
 
   return meds
     .flatMap((m) =>
-      m.times.map((time) => {
+      [...new Set(m.times)].map((time) => {
         const log = logMap.get(`${m._id}|${time}`);
         return {
           medicationId: m._id,

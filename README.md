@@ -30,6 +30,16 @@ npm start
 
 Open http://localhost:3000. `npm run dev` restarts the server automatically when files change.
 
+## Testing
+
+```bash
+npm test
+```
+
+The end-to-end API tests in `test/api.test.js` run the real app against a temporary in-memory MongoDB, so your own database is never touched. They cover CRUD and validation for every resource, the medication schedule and doses, the dashboard, Recently deleted, storage bins and the production hardening.
+
+The first run downloads a MongoDB binary (about 600 MB, cached afterwards). To use a mongod you already have, set `MONGOMS_SYSTEM_BINARY` to its path.
+
 ## Production
 
 What's built in:

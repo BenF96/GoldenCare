@@ -9,6 +9,9 @@ const medicationSchema = new mongoose.Schema(
     // Daily times to take it, 24h "HH:MM"
     times: {
       type: [String],
+      // Normalise ("8:00" → "08:00"), remove duplicates and sort, so each dose appears once
+      set: (arr) =>
+        Array.isArray(arr) ? [...new Set(arr.map((t) => String(t).trim().padStart(5, '0')))].sort() : arr,
       validate: {
         validator: (arr) => arr.length > 0 && arr.every((t) => TIME_RX.test(t)),
         message: 'Enter at least one time as HH:MM, e.g. 08:00, 20:00',

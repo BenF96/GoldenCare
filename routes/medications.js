@@ -1,7 +1,7 @@
 const { crudRouter, wrap, HttpError } = require('../utils/crud');
 const Medication = require('../models/Medication');
 const DoseLog = require('../models/DoseLog');
-const { DATE_RX, resolveDate } = require('../utils/dates');
+const { DATE_RX, resolveDate, localDate } = require('../utils/dates');
 const { buildSchedule, caregiverElderIds } = require('../utils/schedule');
 
 module.exports = crudRouter(Medication, {
@@ -42,6 +42,12 @@ module.exports = crudRouter(Medication, {
         if (!DATE_RX.test(date || '') || !med.times.includes(time)) {
           throw new HttpError(400, 'Invalid date or time for this medication');
         }
+        // Only days the medicine is actually scheduled, and not the future
+        // (one day of leeway for clients in a time zone ahead of the server)
+        if (date < med.startDate || (med.endDate && date > med.endDate)) {
+          throw new HttpError(400, 'This medicine is not scheduled on that date');
+        }
+        if (date > localDate(1)) throw new HttpError(400, 'Doses cannot be marked for a future date');
         if (status === 'Pending') {
           await DoseLog.deleteOne({ medication: med._id, date, time });
           return res.json({ status: 'Pending' });
